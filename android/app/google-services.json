@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "494049539601",
+    "firebase_url": "https://flash-chat-3335c.firebaseio.com",
+    "project_id": "flash-chat-3335c",
+    "storage_bucket": "flash-chat-3335c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494049539601:android:2e021d413128387b7ea3b0",
+        "android_client_info": {
+          "package_name": "co.nargok.flash_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "494049539601-l4hjvrunrno8337sdjg53bugag3at9qc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8R2Fg3wl9msh1jOXcXIl3zAEXRObeisc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "494049539601-l4hjvrunrno8337sdjg53bugag3at9qc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
