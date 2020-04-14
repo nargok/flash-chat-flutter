@@ -89,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   });
                   try {
                     final user = await _auth.signInWithEmailAndPassword(email: email, password: password);
-                    if (user != user) {
+                    if (user != null) {
                       Navigator.pushNamed(context, ChatScreen.id);
                     }
                     setState(() {
@@ -97,6 +97,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     });
                   } catch (e) {
                     print(e);
+                    setState(() {
+                      showSpinner = false;
+                    });
                   }
                 },
               ),
