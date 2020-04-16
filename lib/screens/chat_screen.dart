@@ -129,7 +129,7 @@ class MessageStream extends StatelessWidget {
             ),
           );
         }
-        final messages = snapshot.data.documents;
+        final messages = snapshot.data.documents.reversed;
         List<MessageBubble> messageWidgets = [];
         for (var message in messages) {
           final messageText = message.data['text'];
@@ -146,6 +146,7 @@ class MessageStream extends StatelessWidget {
         }
         return Expanded(
           child: ListView(
+            reverse: true,
             padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 20.0),
             children: messageWidgets,
           ),
@@ -194,9 +195,9 @@ class MessageBubble extends StatelessWidget {
               padding:
               const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
               child: Text(
-                '$text',
+                text,
                 style: TextStyle(
-                  fontSize: 12.0,
+                  fontSize: 15.0,
                   color: isMe ? Colors.white : Colors.black54,
                 ),
               ),
