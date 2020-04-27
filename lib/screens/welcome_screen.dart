@@ -1,5 +1,6 @@
 import 'package:flash_chat/screens/login_screen.dart';
 import 'package:flash_chat/screens/registration_screen.dart';
+import 'package:flash_chat/screens/twitter_login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 
@@ -86,6 +87,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               title: 'Register',
               color: Colors.blueAccent,
             ),
+            RoundedButton(
+              title: 'Twitter Login',
+              color: Colors.lightBlue,
+              onPressed: () {
+                Navigator.pushNamed(context, TwitterLoginScreen.id);
+              },
+            )
           ],
         ),
       ),
