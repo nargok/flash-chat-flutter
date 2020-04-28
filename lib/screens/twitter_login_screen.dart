@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_twitter/flutter_twitter.dart';
@@ -11,7 +12,8 @@ class TwitterLoginScreen extends StatefulWidget {
 
 class TwitterLoginState extends State {
   static final TwitterLogin twitterLogin = new TwitterLogin(
-      consumerKey: 'YOUR-API-KEY', consumerSecret: 'YOUR-API-SECRET-KEY');
+      consumerKey: 'API-KEY', consumerSecret: 'SECRET-KEY');
+  static final _auth = FirebaseAuth.instance;
 
   String _message = 'Logged out';
 
@@ -22,6 +24,10 @@ class TwitterLoginState extends State {
     switch (result.status) {
       case TwitterLoginStatus.loggedIn:
         newMessage = 'Logged in! username: ${result.session.username}';
+        final AuthCredential credential = TwitterAuthProvider.getCredential(
+            authToken: result.session.token,
+            authTokenSecret: result.session.secret);
+        final user = await _auth.signInWithCredential(credential);
         break;
       case TwitterLoginStatus.cancelledByUser:
         newMessage = 'Login cancelled by user';
@@ -37,6 +43,7 @@ class TwitterLoginState extends State {
 
   void _logout() async {
     await twitterLogin.logOut();
+    await _auth.signOut();
 
     setState(() {
       _message = 'Logged out';
