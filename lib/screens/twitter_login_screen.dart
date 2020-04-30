@@ -66,8 +66,10 @@ class TwitterLoginState extends State {
     Client client = _getClient(twitterConsumerKey, twitterConsumerSecret,
         session.token, session.secret);
 
+    Map<String, String> body = { 'status': 'テスト投稿だぎゃー' };
+
     client
-        .get('https://api.twitter.com/1.1/statuses/home_timeline.json?count=1')
+        .post('https://api.twitter.com/1.1/statuses/update.json', body: body)
         .then((res) {
       print(res.body);
     });
