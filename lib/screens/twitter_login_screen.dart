@@ -13,12 +13,13 @@ class TwitterLoginScreen extends StatefulWidget {
 }
 
 class TwitterLoginState extends State {
-  static String twitterConsumerKey = 'YOUR-API-KEY';
-  static String twitterConsumerSecret = 'YOUR-API-SECRET';
+  static String twitterConsumerKey = 'api_key';
+  static String twitterConsumerSecret = 'api_secret';
 
   static final TwitterLogin twitterLogin = new TwitterLogin(
       consumerKey: twitterConsumerKey, consumerSecret: twitterConsumerSecret);
   static final _auth = FirebaseAuth.instance;
+  static final _txtController = new TextEditingController();
 
   String _message = 'Logged out';
   String sessionToken;
@@ -66,13 +67,17 @@ class TwitterLoginState extends State {
     Client client = _getClient(twitterConsumerKey, twitterConsumerSecret,
         session.token, session.secret);
 
-    Map<String, String> body = { 'status': 'テスト投稿だぎゃー' };
+    String status = _txtController.text;
+
+    Map<String, String> body = { 'status': '$status' };
 
     client
         .post('https://api.twitter.com/1.1/statuses/update.json', body: body)
         .then((res) {
       print(res.body);
     });
+
+    _txtController.clear();
   }
 
   static oauth1.Client _getClient(String consumerKey, String consumerSecret,
@@ -96,24 +101,33 @@ class TwitterLoginState extends State {
           title: Text('Twitter login page'),
         ),
         body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(_message),
-              RaisedButton(
-                child: Text('Login'),
-                onPressed: _login,
-              ),
-              RaisedButton(
-                child: Text('Log out'),
-                onPressed: _logout,
-              ),
-              RaisedButton(
-                child: Text('ツイートする'),
-                color: Colors.lightBlue,
-                onPressed: _tweet,
-              )
-            ],
+          child: Container(
+            padding: const EdgeInsets.all(50.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(_message),
+                RaisedButton(
+                  child: Text('Login'),
+                  onPressed: _login,
+                ),
+                RaisedButton(
+                  child: Text('Log out'),
+                  onPressed: _logout,
+                ),
+                TextField(
+                  controller: _txtController,
+                  decoration: InputDecoration(
+                    hintText: 'What\'s happning?'
+                  ),
+                ),
+                RaisedButton(
+                  child: Text('ツイートする'),
+                  color: Colors.lightBlue,
+                  onPressed: _tweet,
+                )
+              ],
+            ),
           ),
         ),
       ),
