@@ -1,9 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_twitter/flutter_twitter.dart';
 import 'package:oauth1/oauth1.dart' as oauth1;
 import 'package:oauth1/oauth1.dart';
+import 'dart:async' show Future;
+import 'dart:convert';
+
+Future<String> loadConfig() async {
+  return rootBundle.loadString('assets/config.json');
+}
 
 class TwitterLoginScreen extends StatefulWidget {
   static String id = 'twitter_login_screen';
@@ -13,8 +19,8 @@ class TwitterLoginScreen extends StatefulWidget {
 }
 
 class TwitterLoginState extends State {
-  static String twitterConsumerKey = 'api_key';
-  static String twitterConsumerSecret = 'api_secret';
+  static String twitterConsumerKey;
+  static String twitterConsumerSecret;
 
   static final TwitterLogin twitterLogin = new TwitterLogin(
       consumerKey: twitterConsumerKey, consumerSecret: twitterConsumerSecret);
@@ -24,6 +30,17 @@ class TwitterLoginState extends State {
   String _message = 'Logged out';
   String sessionToken;
   String sessionSecret;
+  bool isPosted = false;
+
+  @override
+  void initState() {
+    loadConfig().then((t) {
+      final config = json.decode(t);
+      twitterConsumerKey = config['twitter_consumer_key'];
+      twitterConsumerSecret = config['twitter_consumer_secret'];
+    });
+    super.initState();
+  }
 
   void _login() async {
     final TwitterLoginResult result = await twitterLogin.authorize();
@@ -60,7 +77,21 @@ class TwitterLoginState extends State {
     });
   }
 
-  void _tweet() async {
+  _showSnackBar(BuildContext context) {
+    final _snackBar = SnackBar(
+      content: Text('ツイートしました!'),
+      action: SnackBarAction(
+        label: 'とじる',
+        onPressed: () {
+          Scaffold.of(context).removeCurrentSnackBar();
+        },
+      ),
+      duration: Duration(seconds: 3),
+    );
+    Scaffold.of(context).showSnackBar(_snackBar);
+  }
+
+  Future<bool> _tweet() async {
     print('pushed tweet button');
     TwitterSession session = await twitterLogin.currentSession;
 
@@ -69,15 +100,18 @@ class TwitterLoginState extends State {
 
     String status = _txtController.text;
 
-    Map<String, String> body = { 'status': '$status' };
+    Map<String, String> body = {'status': '$status'};
 
-    client
-        .post('https://api.twitter.com/1.1/statuses/update.json', body: body)
-        .then((res) {
-      print(res.body);
-    });
+    final res = await client.post('https://api.twitter.com/1.1/statuses/update.json',
+        body: body);
 
     _txtController.clear();
+
+    if (res.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   static oauth1.Client _getClient(String consumerKey, String consumerSecret,
@@ -95,40 +129,50 @@ class TwitterLoginState extends State {
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       home: Scaffold(
         appBar: new AppBar(
           title: Text('Twitter login page'),
         ),
-        body: Center(
-          child: Container(
-            padding: const EdgeInsets.all(50.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(_message),
-                RaisedButton(
-                  child: Text('Login'),
-                  onPressed: _login,
+        body: Builder(
+          builder: (BuildContext context) {
+            return Center(
+              child: Container(
+                padding: const EdgeInsets.all(50.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(_message),
+                    RaisedButton(
+                      child: Text('Login'),
+                      onPressed: _login,
+                    ),
+                    RaisedButton(
+                      child: Text('Log out'),
+                      onPressed: _logout,
+                    ),
+                    TextField(
+                      controller: _txtController,
+                      decoration:
+                          InputDecoration(hintText: 'What\'s happning?'),
+                    ),
+                    RaisedButton(
+                      child: Text('ツイートする'),
+                      color: Colors.lightBlue,
+                      onPressed: () async {
+                        bool isTweeted = await _tweet();
+                        print('tweet status is: $isTweeted');
+                        if (isTweeted) {
+                          _showSnackBar(context);
+                        }
+                      },
+                    )
+                  ],
                 ),
-                RaisedButton(
-                  child: Text('Log out'),
-                  onPressed: _logout,
-                ),
-                TextField(
-                  controller: _txtController,
-                  decoration: InputDecoration(
-                    hintText: 'What\'s happning?'
-                  ),
-                ),
-                RaisedButton(
-                  child: Text('ツイートする'),
-                  color: Colors.lightBlue,
-                  onPressed: _tweet,
-                )
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
