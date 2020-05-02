@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flash_chat/screens/image_tweet_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_twitter/flutter_twitter.dart';
@@ -102,8 +103,8 @@ class TwitterLoginState extends State {
 
     Map<String, String> body = {'status': '$status'};
 
-    final res = await client.post('https://api.twitter.com/1.1/statuses/update.json',
-        body: body);
+    final res = await client
+        .post('https://api.twitter.com/1.1/statuses/update.json', body: body);
 
     _txtController.clear();
 
@@ -129,51 +130,55 @@ class TwitterLoginState extends State {
 
   @override
   Widget build(BuildContext context) {
-
-    return MaterialApp(
-      home: Scaffold(
-        appBar: new AppBar(
-          title: Text('Twitter login page'),
-        ),
-        body: Builder(
-          builder: (BuildContext context) {
-            return Center(
-              child: Container(
-                padding: const EdgeInsets.all(50.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(_message),
-                    RaisedButton(
-                      child: Text('Login'),
-                      onPressed: _login,
-                    ),
-                    RaisedButton(
-                      child: Text('Log out'),
-                      onPressed: _logout,
-                    ),
-                    TextField(
-                      controller: _txtController,
-                      decoration:
-                          InputDecoration(hintText: 'What\'s happning?'),
-                    ),
-                    RaisedButton(
-                      child: Text('ツイートする'),
-                      color: Colors.lightBlue,
-                      onPressed: () async {
-                        bool isTweeted = await _tweet();
-                        print('tweet status is: $isTweeted');
-                        if (isTweeted) {
-                          _showSnackBar(context);
-                        }
-                      },
-                    )
-                  ],
-                ),
+    return Scaffold(
+      appBar: new AppBar(
+        title: Text('Twitter login page'),
+      ),
+      body: Builder(
+        builder: (BuildContext context) {
+          return Center(
+            child: Container(
+              padding: const EdgeInsets.all(50.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(_message),
+                  RaisedButton(
+                    child: Text('Login'),
+                    onPressed: _login,
+                  ),
+                  RaisedButton(
+                    child: Text('Log out'),
+                    onPressed: _logout,
+                  ),
+                  TextField(
+                    controller: _txtController,
+                    decoration: InputDecoration(hintText: 'What\'s happning?'),
+                  ),
+                  RaisedButton(
+                    child: Text('ツイートする'),
+                    color: Colors.lightBlue,
+                    onPressed: () async {
+                      bool isTweeted = await _tweet();
+                      print('tweet status is: $isTweeted');
+                      if (isTweeted) {
+                        _showSnackBar(context);
+                      }
+                    },
+                  ),
+                  RaisedButton(
+                    child: Text('画像付きツイートする'),
+                    color: Colors.blueAccent,
+                    onPressed: () {
+                      print('画像付きツイートをする');
+                      Navigator.pushNamed(context, ImageTweetScreen.id);
+                    },
+                  )
+                ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
