@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ImageTweetScreen extends StatefulWidget {
   static String id = 'image_tweet_screen';
@@ -9,7 +11,16 @@ class ImageTweetScreen extends StatefulWidget {
 }
 
 class _ImageTweetState extends State {
+  File _imageFile;
   TextEditingController _txtController = TextEditingController();
+
+  Future _getImage() async {
+    final image = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _imageFile = image;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,12 +35,20 @@ class _ImageTweetState extends State {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.asset('images/logo.png'),
+              _imageFile == null ? new Text("no image selected") : new Image
+                  .file(_imageFile),
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: TextField(
                   controller: _txtController,
                 ),
+              ),
+              RaisedButton(
+                child: Text('画像を選択する'),
+                onPressed: () {
+                  print('画像を選択する');
+                  _getImage();
+                },
               ),
               RaisedButton(
                 child: Text('ツイートする'),
