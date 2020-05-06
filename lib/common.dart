@@ -32,6 +32,23 @@ oauth1.Authorization getAuthorization(
           oauth1.SignatureMethods.hmacSha1));
 }
 
+String getSignature(
+    SignatureMethod signatureMethod,
+    ClientCredentials clientCredentials,
+    Credentials credentials,
+    String httpMethod,
+    String url) {
+
+  final AuthorizationHeaderBuilder ahb = AuthorizationHeaderBuilder();
+  ahb.signatureMethod = signatureMethod;
+  ahb.clientCredentials = clientCredentials;
+  ahb.credentials = credentials;
+  ahb.method = httpMethod;
+  ahb.url = url;
+  final signature = ahb.build().toString();
+  return signature;
+}
+
 /* 署名作成
   1. キーの作成
   2. データの作成
@@ -61,7 +78,8 @@ class AuthorizationHeader {
     if (_credentials != null) {
       params['oauth_token'] = _credentials.token;
     }
-    params.addAll(_additionalParameters);
+    // todo 一時的にコメントアウト
+//    params.addAll(_additionalParameters);
     if (!params.containsKey('oauth_signature')) {
       params['oauth_signature'] = _createSignature(_method, _url, params);
     }
