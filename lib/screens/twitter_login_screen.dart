@@ -1,16 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flash_chat/screens/image_tweet_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_twitter/flutter_twitter.dart';
 import 'package:oauth1/oauth1.dart' as oauth1;
 import 'package:oauth1/oauth1.dart';
 import 'dart:async' show Future;
 import 'dart:convert';
+import '../common.dart';
 
-Future<String> loadConfig() async {
-  return rootBundle.loadString('assets/config.json');
-}
 
 class TwitterLoginScreen extends StatefulWidget {
   static String id = 'twitter_login_screen';
@@ -115,6 +112,7 @@ class TwitterLoginState extends State {
     }
   }
 
+  // todo 後で共通処理に入れ替える
   static oauth1.Client _getClient(String consumerKey, String consumerSecret,
       String accessToken, String accessSecret) {
     return oauth1.Client(
