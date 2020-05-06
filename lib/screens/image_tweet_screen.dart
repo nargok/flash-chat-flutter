@@ -7,7 +7,6 @@ import 'package:oauth1/oauth1.dart';
 import 'package:oauth1/oauth1.dart' as oauth1;
 import '../common.dart';
 import 'dart:convert';
-import 'package:http/http.dart';
 import 'package:http/http.dart' as http;
 
 class ImageTweetScreen extends StatefulWidget {
@@ -50,31 +49,12 @@ class _ImageTweetState extends State {
     });
   }
 
-  // todo 画像を登録する処理 => media_id
+  // 画像を登録する処理
   Future<String> _putImageFile(
       oauth1.ClientCredentials clientCredentials,
       oauth1.Credentials credentials,
       oauth1.Client client,
       String filepath) async {
-//    List<int> imageBytes = await image.readAsBytes();
-//    print(imageBytes);
-//    final imageBase64 = base64Encode(imageBytes);
-//    print(imageBase64);
-//
-//    Map<String, String> body = {'media_data': imageBase64};
-
-    // todo 結構はまっている...
-    // todo ためしてみる httpパッケージでシンプルにマルチpartリクエストしてみる
-    // todo 認証が云々寒雲とか言われたら、oauth1からトークンだけ取得する方法を考える
-
-//
-//    final uri = Uri.parse('http://192.168.0.105:3000/upload'); // todo 一時的にlocalhostへ通信
-//    final req = http.MultipartRequest("POST", uri)
-//      ..fields['media_data'] = imageBase64
-//      ..headers['Content-Transfer-Encoding'] = "base64";
-    // todo 署名の取得
-    // requestTokenCredentialsじゃ、とれそうにないのでひとまずtemporaryで
-//    final tokenCredentials = auth.requestTokenCredentials(credentials, 'hohoge');
 
     final signature = getSignature(
         oauth1.Platform(
@@ -92,7 +72,7 @@ class _ImageTweetState extends State {
 
     final uri = Uri.parse(mediaEndpoint);
     final req = http.MultipartRequest("POST", uri)
-      ..headers['Authorization'] = signature; // todo 署名を取得する
+      ..headers['Authorization'] = signature;
     req.files.add(await http.MultipartFile.fromPath('media', filepath));
 
     try {
@@ -104,38 +84,14 @@ class _ImageTweetState extends State {
       print(e);
       throw HttpException('Image post to twitter was failed.');
     }
-
-//    final mediaId = response.stream.transform(utf8.decoder).listen((value) {
-//      debugPrint(value);
-//      final responseJson = json.decode(value);
-//      print('media_id_string is :' + responseJson['media_id_string']);
-//      return responseJson['media_id_string'];
-//    });
-
-//    final res = await client.post(mediaEndpoint,
-//      headers: {
-//        "Content-Transfer-Encoding": "base64",
-//        "Content-type": "application/x-www-form-urlencoded",
-//      },
-//      body: body,
-//    ).catchError((e) {
-//      print(e);
-//    });
-
-//    print(res.body);
   }
 
-  // todo 本文を投稿する処理
+  // 本文を投稿する処理
   Future<bool> _tweet() async {
     TwitterSession session = await twitterLogin.currentSession;
 
     final client = getClient(twitterConsumerKey, twitterConsumerSecret,
         session.token, session.secret);
-
-    final auth = getAuthorization(twitterConsumerKey, twitterConsumerSecret);
-
-    print('token is :' + session.token);
-    print('secret is :' + session.secret);
 
     final clientCredentials =
         ClientCredentials(twitterConsumerKey, twitterConsumerSecret);
@@ -145,7 +101,7 @@ class _ImageTweetState extends State {
 
     Map<String, String> body = {
       'status': _txtController.text,
-      'media_id': mediaId,
+      'media_ids': mediaId,
     };
 
     final res = await client.post(baseUrl + tweetEndpoint, body: body);
